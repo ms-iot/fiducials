@@ -33,8 +33,10 @@
 
 #include <assert.h>
 #include <signal.h>
+#ifndef WIN32
 #include <sys/time.h>
 #include <unistd.h>
+#endif
 
 #include <ros/ros.h>
 #include <tf/transform_datatypes.h>
@@ -134,7 +136,7 @@ FiducialSlam::FiducialSlam(ros::NodeHandle &nh) : fiducialMap(nh) {
     ROS_INFO("Fiducial Slam ready");
 }
 
-auto node = unique_ptr<FiducialSlam>(nullptr);
+auto node = std::unique_ptr<FiducialSlam>(nullptr);
 
 void mySigintHandler(int sig) {
     if (node != nullptr) node->fiducialMap.saveMap();
@@ -146,7 +148,7 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "fiducial_slam", ros::init_options::NoSigintHandler);
     ros::NodeHandle nh("~");
 
-    node = make_unique<FiducialSlam>(nh);
+    node = std::make_unique<FiducialSlam>(nh);
     signal(SIGINT, mySigintHandler);
 
     ros::Rate r(20);

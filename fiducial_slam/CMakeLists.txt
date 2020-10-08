@@ -16,6 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(OpenCV REQUIRED)
 
+
+
 ##############
 ## Services ##
 ##############
@@ -36,7 +38,21 @@ generate_messages(
 ## Build ##
 ###########
 
+if (MSVC)
+if(NOT EXISTS ${CMAKE_SOURCE_DIR}/aruco_nano.h)
+file(DOWNLOAD
+    https://sourceforge.net/projects/aruco/files/3.1.12/aruco_nano.h/download
+    ${CMAKE_SOURCE_DIR}/aruco_nano.h
+    SHOW_PROGRESS
+)
+endif()
+
+include_directories(${CMAKE_SOURCE_DIR})
+add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+
+else()
 add_definitions(-std=c++11)
+endif()
 
 include_directories(${catkin_INCLUDE_DIRS} include)
 catkin_package(INCLUDE_DIRS include

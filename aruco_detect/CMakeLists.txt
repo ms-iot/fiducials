@@ -26,17 +26,34 @@ catkin_package(INCLUDE_DIRS DEPENDS OpenCV)
 ## Build ##
 ###########
 
-add_definitions(-std=c++11)
 
 include_directories(${catkin_INCLUDE_DIRS})
 include_directories(${OpenCV_INCLUDE_DIRS})
+if (MSVC)
+if(NOT EXISTS ${CMAKE_SOURCE_DIR}/aruco_nano.h)
+file(DOWNLOAD
+    https://sourceforge.net/projects/aruco/files/3.1.12/aruco_nano.h/download
+    ${CMAKE_SOURCE_DIR}/aruco_nano.h
+    SHOW_PROGRESS
+)
+endif()
+
+include_directories(${CMAKE_SOURCE_DIR})
+
+else()
+add_definitions(-std=c++11)
+endif()
 
 add_executable(aruco_detect src/aruco_detect.cpp)
 
 add_dependencies(aruco_detect ${${PROJECT_NAME}_EXPORTED_TARGETS}
                  ${catkin_EXPORTED_TARGETS})
 
-target_link_libraries(aruco_detect ${catkin_LIBRARIES} ${OpenCV_LIBS})
+if (MSVC)
+#set_target_properties(${aruco_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
+endif()
+
+target_link_libraries(aruco_detect ${catkin_LIBRARIES} ${OpenCV_LIBS} ${aruco_LIBS})
 
 #############
 ## Install ##
