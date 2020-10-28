@@ -80,6 +80,9 @@ class FiducialsNode {
 
     ros::Subscriber caminfo_sub;
     ros::Subscriber ignore_sub;
+    ros::NodeHandle nh;
+    ros::NodeHandle pnh;
+
     image_transport::ImageTransport it;
     image_transport::Subscriber img_sub;
     tf2_ros::TransformBroadcaster broadcaster;
@@ -102,8 +105,6 @@ class FiducialsNode {
     std::string frameId;
     std::vector<int> ignoreIds;
     std::map<int, double> fiducialLens;
-    ros::NodeHandle nh;
-    ros::NodeHandle pnh;
 
     image_transport::Publisher image_pub;
 
@@ -539,7 +540,10 @@ bool FiducialsNode::enableDetectionsCallback(std_srvs::SetBool::Request &req,
 }
 
 
-FiducialsNode::FiducialsNode() : nh(), pnh("~"), it(nh)
+FiducialsNode::FiducialsNode() : 
+    nh(), 
+    pnh("~"), 
+    it(nh)
 {
     frameNum = 0;
 
