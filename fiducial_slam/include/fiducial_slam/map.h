@@ -39,7 +39,12 @@
 #include <tf2_ros/transform_listener.h>
 #include <visualization_msgs/Marker.h>
 
+#ifdef WIN32
+#include <aruco_nano.h>
+#else
 #include <opencv2/aruco.hpp>
+#endif
+
 #include <opencv2/calib3d.hpp>
 #include <opencv2/highgui.hpp>
 

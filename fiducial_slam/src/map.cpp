@@ -129,19 +129,30 @@ Map::Map(ros::NodeHandle &nh) : tfBuffer(ros::Duration(30.0)) {
     nh.param<double>("multi_error_theshold", multiErrorThreshold, -1);
 
     nh.param<std::string>("map_file", mapFilename,
-                          std::string(getenv("HOME")) + "/.ros/slam/map.txt");
+    #ifdef WIN32
+                          std::string(getenv("HOME")) 
+    #else
+                          std::string(getenv("USERPROFILE")) 
+    #endif
+                          + "/.ros/slam/map.txt");
 
-    boost::filesystem::path mapPath(mapFilename);
-    boost::filesystem::path dir = mapPath.parent_path();
-    boost::filesystem::create_directories(dir);
+    try
+    {
+        boost::filesystem::path mapPath(mapFilename);
+        boost::filesystem::path dir = mapPath.parent_path();
+        boost::filesystem::create_directories(dir);
 
-    std::string initialMap;
-    nh.param<std::string>("initial_map_file", initialMap, "");
 
-    if (!initialMap.empty()) {
-        loadMap(initialMap);
-    } else {
-        loadMap();
+        std::string initialMap;
+        nh.param<std::string>("initial_map_file", initialMap, "");
+
+        if (!initialMap.empty()) {
+            loadMap(initialMap);
+        } else {
+            loadMap();
+        }
+    } catch (boost::filesystem::filesystem_error e) {
+        ROS_ERROR("Unable to open map file %s\n", e.what());
     }
 
     publishMarkers();
